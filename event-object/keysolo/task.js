@@ -4,6 +4,7 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.countdown = container.querySelector('.countdown');
 
     this.reset();
 
@@ -11,19 +12,36 @@ class Game {
   }
 
   reset() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
     this.setNewWord();
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода слова вызываем this.success()
-      При неправильном вводе символа - this.fail();
-     */
+    let game = this;
+    document.addEventListener('keypress', function(event){
+      let currentSymbol = game.currentSymbol.textContent;
+      if (event.key.toLowerCase() == currentSymbol.toLowerCase()) {
+        game.success();
+      } else {
+        game.fail();
+      }
+    });
+  }
+
+  tickTimer(game) {
+    game.restSeconds--;
+    game.showCountdown();
+    if (game.restSeconds < 1) {
+      game.fail();
+    }
+  }
+
+  showCountdown() {
+    this.countdown.textContent = this.restSeconds;
   }
 
   success() {
@@ -52,6 +70,12 @@ class Game {
     const word = this.getWord();
 
     this.renderWord(word);
+    this.restSeconds = word.length;
+    this.showCountdown();
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.timer = setInterval(this.tickTimer, 1000, this);
   }
 
   getWord() {
