@@ -8,12 +8,17 @@ function hideSubMenu() {
 }
 
 function menuClickHandler() {
-    hideSubMenu();
     const parentItem = this.closest('.menu__item');
     const subMenu = parentItem.querySelector('.menu_sub');
     if (subMenu) {
-        subMenu.classList.add('menu_active');
+        let menuIsOpen = subMenu.classList.contains('menu_active');
+        hideSubMenu();
+        if (!menuIsOpen) {
+            subMenu.classList.add('menu_active');
+        }
         return false;
+    } else {
+        hideSubMenu();
     }
 }
 
